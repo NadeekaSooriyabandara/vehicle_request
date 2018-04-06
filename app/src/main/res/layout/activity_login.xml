@@ -58,7 +58,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="40dp"
         android:textSize="16sp"
-        android:onClick="returnLoginScreenButtonClicked"
+        android:onClick="returnRegisterScreenButtonClicked"
         android:text="Create Account"
         android:textAllCaps="false"/>
 

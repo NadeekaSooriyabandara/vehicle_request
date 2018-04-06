@@ -14,4 +14,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="faculty_prompt">Choose a faculty</string>
+
+    <string-array name="faculty_arrays">
+        <item>Applied Sciences</item>
+        <item>Medical Science</item>
+        <item>Management</item>
+        <item>Art</item>
+    </string-array>
 </resources>

@@ -2,12 +2,16 @@ package com.example.android.vehiclerequest;
 
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        mAuth.addAuthStateListener(mAuthListener);*/
+        mAuth.addAuthStateListener(mAuthListener);
+        addListenerOnButton();
 
         myCalendar1 = Calendar.getInstance();
         myCalendar2 = Calendar.getInstance();
@@ -77,6 +82,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
         };
+
+    }
+
+    public void addListenerOnButton() {
+
+        ImageButton imageButton = (ImageButton) findViewById(R.id.logout);
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                mAuth.signOut();
+            }
+
+        });
 
     }
 
@@ -114,5 +134,51 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(this, sdf.format(myCalendar2.getTime()), Toast.LENGTH_SHORT).show();
         endDate.setText(sdf.format(myCalendar2.getTime()));
+    }
+
+    /*public static class VehicleViewHolder extends RecyclerView.ViewHolder {
+
+        View mView;
+
+        public VehicleViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+        }
+
+        public void setTitle(String title) {
+            TextView post_title = (TextView) mView.findViewById(R.id.text_title);
+            post_title.setText(title);
+        }
+
+        public void setDesc(String desc) {
+            TextView post_desc = (TextView) mView.findViewById(R.id.text_desc);
+            post_desc.setText(desc);
+        }
+
+        public void setImage(Context context, String image) {
+            *//*final ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
+            Picasso.with(context).load(image)
+                    .resize(270, 150)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.error_image)
+                    .into(post_image);*//*
+            final SimpleDraweeView mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.post_image);
+            mSimpleDraweeView.setController(
+                    Fresco.newDraweeControllerBuilder()
+                            .setTapToRetryEnabled(true)
+                            .setUri(Uri.parse(image))
+                            .build());
+        }
+
+        public void setUsername(String username) {
+            TextView postUsername = (TextView) mView.findViewById(R.id.textUsername);
+            postUsername.setText(username);
+
+        }
+
+    }*/
+
+    public void searchButtonClicked(View view) {
+
     }
 }
