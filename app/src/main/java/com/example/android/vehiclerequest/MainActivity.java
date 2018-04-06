@@ -8,14 +8,25 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,11 +43,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView startDate;
     private TextView endDate;
 
+    private RecyclerView vehicle_list;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseReference;
+    FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Fresco.initialize(this);
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -83,6 +100,50 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
+        vehicle_list = (RecyclerView) findViewById(R.id.vehicles_list);
+        vehicle_list.setHasFixedSize(true);
+        vehicle_list.setLayoutManager(new LinearLayoutManager(this));
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mDatabase.getReference().child("Vehicles").child("Bus");
+
+        Query postQuery = mDatabaseReference.orderByKey();
+        FirebaseRecyclerOptions<Vehicle> options = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(postQuery, Vehicle.class)
+                .build();
+        FBRA = new FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder>(
+                options) {
+            @NonNull
+            @Override
+            public VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.vehicle_row, parent, false);
+
+                return new VehicleViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull VehicleViewHolder holder, int position, @NonNull Vehicle model) {
+
+                //final String post_key = getRef(position).getKey().toString();
+
+                holder.setVehicleNo(model.getVehicleNo());
+                holder.setSeats(model.getSeats());
+                holder.setImage(getApplicationContext(), model.getImage());
+
+                /*holder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent singleSocialActivity = new Intent(MainActivity.this, SingleSocialActivity.class);
+                        singleSocialActivity.putExtra("PostId", post_key);
+                        startActivity(singleSocialActivity);
+
+                    }
+                });*/
+            }
+        };
+        vehicle_list.setAdapter(FBRA);
+
     }
 
     public void addListenerOnButton() {
@@ -103,7 +164,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //mAuth.addAuthStateListener(mAuthListener);
+        mAuth.addAuthStateListener(mAuthListener);
+        vehicle_list.setAdapter(FBRA);
+        FBRA.startListening();
+
     }
 
     public void startDateClicked(View view) {
@@ -136,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         endDate.setText(sdf.format(myCalendar2.getTime()));
     }
 
-    /*public static class VehicleViewHolder extends RecyclerView.ViewHolder {
+    public static class VehicleViewHolder extends RecyclerView.ViewHolder {
 
         View mView;
 
@@ -145,40 +209,32 @@ public class MainActivity extends AppCompatActivity {
             mView = itemView;
         }
 
-        public void setTitle(String title) {
-            TextView post_title = (TextView) mView.findViewById(R.id.text_title);
-            post_title.setText(title);
+        public void setVehicleNo(String vehicleNo) {
+            TextView vehicle_no = (TextView) mView.findViewById(R.id.vehicle_number);
+            vehicle_no.setText(vehicleNo);
         }
 
-        public void setDesc(String desc) {
-            TextView post_desc = (TextView) mView.findViewById(R.id.text_desc);
-            post_desc.setText(desc);
+        public void setSeats(String seats) {
+            TextView tvseats = (TextView) mView.findViewById(R.id.no_of_seats);
+            tvseats.setText(seats);
         }
 
         public void setImage(Context context, String image) {
-            *//*final ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
-            Picasso.with(context).load(image)
-                    .resize(270, 150)
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.error_image)
-                    .into(post_image);*//*
-            final SimpleDraweeView mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.post_image);
-            mSimpleDraweeView.setController(
-                    Fresco.newDraweeControllerBuilder()
-                            .setTapToRetryEnabled(true)
-                            .setUri(Uri.parse(image))
-                            .build());
+            final SimpleDraweeView mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.vehicle_image);
+            if (image != null) {
+                mSimpleDraweeView.setController(
+                        Fresco.newDraweeControllerBuilder()
+                                .setTapToRetryEnabled(true)
+                                .setUri(Uri.parse(image))
+                                .build());
+            }else{
+                Toast.makeText(context, "null image", Toast.LENGTH_SHORT).show();
+            }
         }
 
-        public void setUsername(String username) {
-            TextView postUsername = (TextView) mView.findViewById(R.id.textUsername);
-            postUsername.setText(username);
-
-        }
-
-    }*/
+    }
 
     public void searchButtonClicked(View view) {
-
+        vehicle_list.setAdapter(FBRA);
     }
 }

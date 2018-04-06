@@ -6,50 +6,41 @@ import android.widget.TextView;
 
 public class Vehicle {
 
-    private TextView mVehicleNo, mSeats;
-    private ImageView mvehicleImage;
-    private boolean mIsChecked;
+    private String mVehicleNo, mSeats;
+    private String mvehicleImage;
 
     public Vehicle() {
 
     }
 
-    public Vehicle(TextView VehicleNo, TextView Seats, ImageView vehicleImage, boolean IsChecked) {
+    public Vehicle(String VehicleNo, String Seats, String image) {
         this.mVehicleNo = VehicleNo;
         this.mSeats = Seats;
-        this.mvehicleImage = vehicleImage;
-        this.mIsChecked = IsChecked;
+        this.mvehicleImage = image;
     }
 
-    public TextView getmVehicleNo() {
+    public String getVehicleNo() {
         return mVehicleNo;
     }
 
-    public TextView getmSeats() {
+    public String getSeats() {
         return mSeats;
     }
 
-    public ImageView getvehicleImage() {
+    public String getImage() {
         return mvehicleImage;
     }
 
-    public boolean IsChecked() {
-        return mIsChecked;
-    }
-
-    public void setmVehicleNo(TextView VehicleNo) {
+    public void setVehicleNo(String VehicleNo) {
         this.mVehicleNo = VehicleNo;
     }
 
-    public void setmSeats(TextView Seats) {
+    public void setSeats(String Seats) {
         this.mSeats = Seats;
     }
 
-    public void setMvehicleImage(ImageView vehicleImage) {
-        this.mvehicleImage = vehicleImage;
+    public void setImage(String image) {
+        this.mvehicleImage = image;
     }
 
-    public void setmIsChecked(boolean IsChecked) {
-        this.mIsChecked = IsChecked;
-    }
 }

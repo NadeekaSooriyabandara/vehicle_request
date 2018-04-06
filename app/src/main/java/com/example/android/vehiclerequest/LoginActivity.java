@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild(user_id)) {
                     progressBar.setVisibility(View.INVISIBLE);
                     Intent loginIntent = new Intent(LoginActivity.this, MainActivity.class);
-                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(loginIntent);
                 } else {
                     Toast.makeText(LoginActivity.this, "User not found", Toast.LENGTH_SHORT).show();
