@@ -48,13 +48,15 @@ public class LoginActivity extends AppCompatActivity {
         String pass = loginPass.getText().toString().trim();
 
         if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass)) {
+            progressBar.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        progressBar.setVisibility(View.VISIBLE);
                         progressBar.animate();
                         checkUserExists();
+                    } else {
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 }
             });
