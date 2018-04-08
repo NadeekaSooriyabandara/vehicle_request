@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mAuth.addAuthStateListener(mAuthListener);
-        addListenerOnButton();
 
         myCalendar1 = Calendar.getInstance();
         myCalendar2 = Calendar.getInstance();
@@ -146,19 +145,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void addListenerOnButton() {
 
-        ImageButton imageButton = (ImageButton) findViewById(R.id.logout);
-
-        imageButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                mAuth.signOut();
-            }
-
-        });
-
+    public void logoutClicked(View view){
+        mAuth.signOut();
     }
 
     @Override
@@ -168,6 +157,12 @@ public class MainActivity extends AppCompatActivity {
         vehicle_list.setAdapter(FBRA);
         FBRA.startListening();
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FBRA.stopListening();
     }
 
     public void startDateClicked(View view) {
