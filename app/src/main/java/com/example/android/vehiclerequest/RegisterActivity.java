@@ -96,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity implements android.widge
 
 
 
-    public void addListenerOnSpinnerItemSelection() {
+    private void addListenerOnSpinnerItemSelection() {
         spfaculty = (Spinner) findViewById(R.id.spinner_faculty);
         spfaculty.setOnItemSelectedListener(this);
     }

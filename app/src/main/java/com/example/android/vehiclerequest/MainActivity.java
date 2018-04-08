@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() == null) {
-                    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    Intent loginIntent = new Intent(MainActivity.this, SigninSignupActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(loginIntent);
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 //final String post_key = getRef(position).getKey().toString();
 
                 holder.setVehicleNo(model.getVehicleNo());
-                holder.setSeats(model.getSeats());
+                holder.setSeats(model.getSeats() + " Seats");
                 holder.setImage(getApplicationContext(), model.getImage());
 
                 /*holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 });*/
             }
         };
-        vehicle_list.setAdapter(FBRA);
+        //vehicle_list.setAdapter(FBRA);
 
     }
 
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        vehicle_list.setAdapter(FBRA);
+        //vehicle_list.setAdapter(FBRA);
         FBRA.startListening();
 
     }

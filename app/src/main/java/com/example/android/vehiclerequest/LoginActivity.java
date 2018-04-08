@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void checkUserExists() {
+    private void checkUserExists() {
         final String user_id = mAuth.getCurrentUser().getUid();
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
