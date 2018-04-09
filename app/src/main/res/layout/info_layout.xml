@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
-    tools:showIn="@layout/include_layput">
+    tools:showIn="@layout/activity_main">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -134,9 +134,10 @@
 
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search"
+        android:id="@+id/search_button"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
         android:textSize="18sp"

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +14,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +33,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -47,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDatabaseReference;
     FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
+
+    private int mOriginalScreenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +142,13 @@ public class MainActivity extends AppCompatActivity {
                 holder.setSeats(model.getSeats() + " Seats");
                 holder.setImage(getApplicationContext(), model.getImage());
 
+                if (position == 0) {
+                    Button confirmButton = (Button) findViewById(R.id.confirm_button);
+                    Button searchButton = (Button) findViewById(R.id.search_button);
+                    confirmButton.setVisibility(View.VISIBLE);
+                    searchButton.setText("Update Search");
+                }
+
                 /*holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -142,6 +161,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         //vehicle_list.setAdapter(FBRA);
+
+        //storeScreenHeightForKeyboardHeightCalculations();
+        //addkeyBoardlistener();
 
     }
 
@@ -195,6 +217,11 @@ public class MainActivity extends AppCompatActivity {
         endDate.setText(sdf.format(myCalendar2.getTime()));
     }
 
+    public void confirmButtonClicked(View view) {
+        //TODO intent to request activity
+
+    }
+
     public static class VehicleViewHolder extends RecyclerView.ViewHolder {
 
         View mView;
@@ -231,5 +258,55 @@ public class MainActivity extends AppCompatActivity {
 
     public void searchButtonClicked(View view) {
         vehicle_list.setAdapter(FBRA);
+
     }
+
+    /*private void storeScreenHeightForKeyboardHeightCalculations() {
+        Rect r = new Rect();
+        View rootview = MainActivity.this.getWindow().getDecorView();
+        rootview.getWindowVisibleDisplayFrame(r);
+        mOriginalScreenHeight = r.height();
+
+        Rect rectangle = new Rect();
+        Window window = MainActivity.this.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        int statusBarHeight = rectangle.top;
+        int contentViewTop =
+                window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
+        int titleBarHeight= contentViewTop - statusBarHeight;
+
+        if (titleBarHeight == 0) {
+            mOriginalScreenHeight -= (24 * getResources().getDisplayMetrics().density);
+        }
+    }
+
+    private void addkeyBoardlistener() {
+        KeyboardVisibilityEvent.setEventListener(
+                MainActivity.this,
+                new KeyboardVisibilityEventListener() {
+                    @Override
+                    public void onVisibilityChanged(boolean isOpen) {
+                        final ScrollView scroll = (ScrollView)findViewById(R.id.scroll_view);
+                        View keyboard_view = (View)findViewById(R.id.keyboard_view);
+                        if (isOpen) {
+                            Rect r = new Rect();
+                            View rootview = MainActivity.this.getWindow().getDecorView(); // this = activity
+                            rootview.getWindowVisibleDisplayFrame(r);
+                            int keyboardHeight = (mOriginalScreenHeight - r.height());
+                            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) keyboard_view.getLayoutParams();
+                            params.height = (int) ((keyboardHeight + 5 * getResources().getDisplayMetrics().density) + 60);
+                            keyboard_view.setLayoutParams(params);
+                            scroll.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    scroll.fullScroll(View.FOCUS_DOWN);
+                                }
+                            });
+                            keyboard_view.setVisibility(View.VISIBLE);
+                        } else {
+                            keyboard_view.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }*/
 }

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/include_layput">
+    tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/vehicles_list"

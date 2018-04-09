@@ -6,14 +6,68 @@
     android:background="@drawable/bus2"
     android:fadeScrollbars="false"
     android:scrollbarSize="5dp"
+    android:id="@+id/scroll_view"
     android:scrollbarThumbVertical="@android:color/darker_gray"
     android:scrollbars="vertical"
     tools:context="com.example.android.vehiclerequest.MainActivity">
 
-    <include
-        layout="@layout/include_layput"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/info_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <include layout="@layout/vehicles_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/reason_field">
+
+            <!--<EditText
+                android:layout_margin="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/editshape"
+                android:padding="5dp"
+                android:gravity="top|left"
+                android:lines="8"
+                android:hint="Type Reason"
+                android:textColorHint="#878686"
+                android:textColor="#000000"
+                android:inputType="textMultiLine"/>-->
+
+
+            <Button
+                android:layout_margin="10dp"
+                android:textSize="18sp"
+                android:onClick="confirmButtonClicked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm"
+                android:visibility="gone"
+                android:id="@+id/confirm_button"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+        <!--<View
+            android:id="@+id/keyboard_view"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            />-->
+
+
+    </LinearLayout>
 
 
 </ScrollView>
