@@ -26,7 +26,7 @@
         <activity
             android:name=".SigninSignupActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".RequestActivity"></activity>
+        <activity android:name=".NotificationActivity"></activity>
     </application>
 
 </manifest>

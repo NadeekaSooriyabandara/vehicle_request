@@ -1,23 +1,33 @@
 package com.example.android.vehiclerequest;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -42,7 +52,7 @@ import java.util.Locale;
 
 import static java.security.AccessController.getContext;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -59,11 +69,15 @@ public class MainActivity extends AppCompatActivity {
     FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
 
     private int mOriginalScreenHeight;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle(null);
+        Toolbar topToolBar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(topToolBar);
 
         Fresco.initialize(this);
         mAuth = FirebaseAuth.getInstance();
@@ -167,9 +181,57 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem menuItem = menu.findItem(R.id.notifications);
+        menuItem.setIcon(buildCounterDrawable(count, R.drawable.ic_notification));
 
-    public void logoutClicked(View view){
-        mAuth.signOut();
+        return true;
+    }
+
+    private Drawable buildCounterDrawable(int count, int backgroundImageId) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.counter_menuitem_layout, null);
+        view.setBackgroundResource(backgroundImageId);
+
+        if (count == 0) {
+            View counterTextPanel = view.findViewById(R.id.counterValuePanel);
+            counterTextPanel.setVisibility(View.GONE);
+        } else {
+            TextView textView = (TextView) view.findViewById(R.id.count);
+            textView.setText("" + count);
+        }
+
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        view.setDrawingCacheEnabled(true);
+        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+        view.setDrawingCacheEnabled(false);
+
+        return new BitmapDrawable(getResources(), bitmap);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.log_out: {
+                mAuth.signOut();
+                return true;
+                }
+            case R.id.notifications:{
+                count++;
+                invalidateOptionsMenu();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -218,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void confirmButtonClicked(View view) {
-        //TODO intent to request activity
+        showRequestDialog();
 
     }
 
@@ -259,6 +321,37 @@ public class MainActivity extends AppCompatActivity {
     public void searchButtonClicked(View view) {
         vehicle_list.setAdapter(FBRA);
 
+    }
+
+    public void showRequestDialog() {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_DARK);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText edt = (EditText) dialogView.findViewById(R.id.edittext_reason);
+
+        dialogBuilder.setTitle("Request a Vehicle");
+        dialogBuilder.setMessage("Enter reason below");
+        dialogBuilder.setPositiveButton("Request", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //TODO something with edt.getText().toString(); update database
+
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //pass
+            }
+        });
+        final AlertDialog b = dialogBuilder.create();
+        b.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                b.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.rgb(0, 255, 0));
+            }
+        });
+        b.show();
     }
 
     /*private void storeScreenHeightForKeyboardHeightCalculations() {
