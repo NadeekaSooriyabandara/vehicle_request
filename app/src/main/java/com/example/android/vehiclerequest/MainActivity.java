@@ -68,8 +68,7 @@ public class MainActivity extends AppCompatActivity{
     private DatabaseReference mDatabaseReference;
     FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
 
-    private int mOriginalScreenHeight;
-    private int count = 0;
+    public static int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,6 +227,8 @@ public class MainActivity extends AppCompatActivity{
             case R.id.notifications:{
                 count++;
                 invalidateOptionsMenu();
+                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                startActivity(intent);
                 return true;
             }
         }
@@ -288,7 +289,7 @@ public class MainActivity extends AppCompatActivity{
 
         View mView;
 
-        public VehicleViewHolder(View itemView) {
+        VehicleViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
         }
@@ -353,53 +354,4 @@ public class MainActivity extends AppCompatActivity{
         });
         b.show();
     }
-
-    /*private void storeScreenHeightForKeyboardHeightCalculations() {
-        Rect r = new Rect();
-        View rootview = MainActivity.this.getWindow().getDecorView();
-        rootview.getWindowVisibleDisplayFrame(r);
-        mOriginalScreenHeight = r.height();
-
-        Rect rectangle = new Rect();
-        Window window = MainActivity.this.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
-        int statusBarHeight = rectangle.top;
-        int contentViewTop =
-                window.findViewById(Window.ID_ANDROID_CONTENT).getTop();
-        int titleBarHeight= contentViewTop - statusBarHeight;
-
-        if (titleBarHeight == 0) {
-            mOriginalScreenHeight -= (24 * getResources().getDisplayMetrics().density);
-        }
-    }
-
-    private void addkeyBoardlistener() {
-        KeyboardVisibilityEvent.setEventListener(
-                MainActivity.this,
-                new KeyboardVisibilityEventListener() {
-                    @Override
-                    public void onVisibilityChanged(boolean isOpen) {
-                        final ScrollView scroll = (ScrollView)findViewById(R.id.scroll_view);
-                        View keyboard_view = (View)findViewById(R.id.keyboard_view);
-                        if (isOpen) {
-                            Rect r = new Rect();
-                            View rootview = MainActivity.this.getWindow().getDecorView(); // this = activity
-                            rootview.getWindowVisibleDisplayFrame(r);
-                            int keyboardHeight = (mOriginalScreenHeight - r.height());
-                            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) keyboard_view.getLayoutParams();
-                            params.height = (int) ((keyboardHeight + 5 * getResources().getDisplayMetrics().density) + 60);
-                            keyboard_view.setLayoutParams(params);
-                            scroll.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    scroll.fullScroll(View.FOCUS_DOWN);
-                                }
-                            });
-                            keyboard_view.setVisibility(View.VISIBLE);
-                        } else {
-                            keyboard_view.setVisibility(View.GONE);
-                        }
-                    }
-                });
-    }*/
 }
