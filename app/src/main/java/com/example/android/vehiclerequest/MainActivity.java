@@ -2,16 +2,12 @@ package com.example.android.vehiclerequest;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,35 +18,26 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
-import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
@@ -62,11 +49,15 @@ public class MainActivity extends AppCompatActivity{
     DatePickerDialog.OnDateSetListener date2;
     private TextView startDate;
     private TextView endDate;
+    private CheckBox van, bus, ac, nonac;
+    private ProgressBar progressBar;
 
     private RecyclerView vehicle_list;
-    private FirebaseDatabase mDatabase;
     private DatabaseReference mDatabaseReference;
-    FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
+    private DatabaseReference mDatabaseUsers;
+    //FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder> FBRA;
+    //Query postQuery;
+    CustomAdapter adapterBusac, adapterBusnonac, adapterBus, adapterVan, adapterBusacVan, adapterBusnonacVan, adapterBusVan;
 
     public static int count = 0;
 
@@ -93,16 +84,21 @@ public class MainActivity extends AppCompatActivity{
         };
         mAuth.addAuthStateListener(mAuthListener);
 
+        progressBar = (ProgressBar) findViewById(R.id.pb_main);
         myCalendar1 = Calendar.getInstance();
         myCalendar2 = Calendar.getInstance();
         startDate = (TextView) findViewById(R.id.tv_start_date);
         endDate = (TextView) findViewById(R.id.tv_end_date);
+        van = (CheckBox) findViewById(R.id.checkBox_van);
+        bus = (CheckBox) findViewById(R.id.checkBox_bus);
+        ac = (CheckBox) findViewById(R.id.checkBox_ac);
+        nonac = (CheckBox) findViewById(R.id.checkBox_nonac);
+
 
         date1 = new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                // TODO Auto-generated method stub
                 myCalendar1.set(Calendar.YEAR, year);
                 myCalendar1.set(Calendar.MONTH, monthOfYear);
                 myCalendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -115,7 +111,6 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                // TODO Auto-generated method stub
                 myCalendar2.set(Calendar.YEAR, year);
                 myCalendar2.set(Calendar.MONTH, monthOfYear);
                 myCalendar2.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -126,17 +121,50 @@ public class MainActivity extends AppCompatActivity{
 
         vehicle_list = (RecyclerView) findViewById(R.id.vehicles_list);
         vehicle_list.setHasFixedSize(true);
-        vehicle_list.setLayoutManager(new LinearLayoutManager(this));
+        vehicle_list.setLayoutManager(new LinearLayoutManager(this, LinearLayout.VERTICAL, false));
 
-        mDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mDatabase.getReference().child("Vehicles").child("Bus");
+        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseUsers = mDatabase.getReference().child("Users");
+        mDatabaseReference = mDatabase.getReference().child("Vehicles");
 
-        Query postQuery = mDatabaseReference.orderByKey();
-        FirebaseRecyclerOptions<Vehicle> options = new FirebaseRecyclerOptions.Builder<Vehicle>()
-                .setQuery(postQuery, Vehicle.class)
+        Query queryBusac = mDatabaseReference.orderByChild("vehicletype").equalTo("busac");
+        Query queryBusnonac = mDatabaseReference.orderByChild("vehicletype").equalTo("busnonac");
+        Query queryBus = mDatabaseReference.orderByChild("bus").equalTo("yes");
+        Query queryVan = mDatabaseReference.orderByChild("vehicletype").equalTo("van");
+        Query queryBusacVan = mDatabaseReference.orderByChild("busacorvan").equalTo("yes");
+        Query queryBusnonacVan = mDatabaseReference.orderByChild("busnonacorvan").equalTo("yes");
+        Query queryBusVan = mDatabaseReference.orderByKey();
+        FirebaseRecyclerOptions<Vehicle> optionBusac = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBusac, Vehicle.class)
                 .build();
-        FBRA = new FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder>(
-                options) {
+        FirebaseRecyclerOptions<Vehicle> optionBusnonac = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBusnonac, Vehicle.class)
+                .build();
+        FirebaseRecyclerOptions<Vehicle> optionBus = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBus, Vehicle.class)
+                .build();
+        FirebaseRecyclerOptions<Vehicle> optionVan = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryVan, Vehicle.class)
+                .build();
+        FirebaseRecyclerOptions<Vehicle> optionBusacVan = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBusacVan, Vehicle.class)
+                .build();
+        FirebaseRecyclerOptions<Vehicle> optionBusnonacVan = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBusnonacVan, Vehicle.class)
+                .build();
+        FirebaseRecyclerOptions<Vehicle> optionBusVan = new FirebaseRecyclerOptions.Builder<Vehicle>()
+                .setQuery(queryBusVan, Vehicle.class)
+                .build();
+
+        adapterBusac = new CustomAdapter(optionBusac, this, startDate, endDate, mDatabaseReference);
+        adapterBusnonac = new CustomAdapter(optionBusnonac, this, startDate, endDate, mDatabaseReference);
+        adapterBus = new CustomAdapter(optionBus, this, startDate, endDate, mDatabaseReference);
+        adapterVan = new CustomAdapter(optionVan, this, startDate, endDate, mDatabaseReference);
+        adapterBusacVan = new CustomAdapter(optionBusacVan, this, startDate, endDate, mDatabaseReference);
+        adapterBusnonacVan = new CustomAdapter(optionBusnonacVan, this, startDate, endDate, mDatabaseReference);
+        adapterBusVan = new CustomAdapter(optionBusVan, this, startDate, endDate, mDatabaseReference);
+
+        /*FBRA = new FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder>(options) {
             @NonNull
             @Override
             public VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -148,9 +176,8 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             protected void onBindViewHolder(@NonNull VehicleViewHolder holder, int position, @NonNull Vehicle model) {
-
+                holder.mView.setVisibility(View.VISIBLE);
                 //final String post_key = getRef(position).getKey().toString();
-
                 holder.setVehicleNo(model.getVehicleNo());
                 holder.setSeats(model.getSeats() + " Seats");
                 holder.setImage(getApplicationContext(), model.getImage());
@@ -162,7 +189,7 @@ public class MainActivity extends AppCompatActivity{
                     searchButton.setText("Update Search");
                 }
 
-                /*holder.mView.setOnClickListener(new View.OnClickListener() {
+                *//*holder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent singleSocialActivity = new Intent(MainActivity.this, SingleSocialActivity.class);
@@ -170,15 +197,15 @@ public class MainActivity extends AppCompatActivity{
                         startActivity(singleSocialActivity);
 
                     }
-                });*/
+                });*//*
             }
-        };
+        };*/
+
         //vehicle_list.setAdapter(FBRA);
 
-        //storeScreenHeightForKeyboardHeightCalculations();
-        //addkeyBoardlistener();
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -221,7 +248,29 @@ public class MainActivity extends AppCompatActivity{
 
         switch (id) {
             case R.id.log_out: {
-                mAuth.signOut();
+                final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_DARK);
+
+                //dialogBuilder.setTitle("Request a Vehicle");
+                dialogBuilder.setMessage("Are you sure want to logout?");
+                dialogBuilder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        mAuth.signOut();
+                    }
+                });
+                dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //pass
+                    }
+                });
+                final AlertDialog b = dialogBuilder.create();
+                b.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        b.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.rgb(0, 255, 0));
+                    }
+                });
+                b.show();
+
                 return true;
                 }
             case R.id.notifications:{
@@ -229,6 +278,7 @@ public class MainActivity extends AppCompatActivity{
                 invalidateOptionsMenu();
                 Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
                 startActivity(intent);
+
                 return true;
             }
         }
@@ -239,15 +289,29 @@ public class MainActivity extends AppCompatActivity{
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        //vehicle_list.setAdapter(FBRA);
-        FBRA.startListening();
+        adapterBusac.startListening();
+        adapterBusnonac.startListening();
+        adapterBus.startListening();
+        adapterVan.startListening();
+        adapterBusacVan.startListening();
+        adapterBusnonacVan.startListening();
+        adapterBusVan.startListening();
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        FBRA.stopListening();
+        adapterBusac.stopListening();
+        adapterBusnonac.stopListening();
+        adapterBus.stopListening();
+        adapterVan.stopListening();
+        adapterBusacVan.stopListening();
+        adapterBusnonacVan.stopListening();
+        adapterBusVan.stopListening();
+        if (mAuth != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     public void startDateClicked(View view) {
@@ -285,7 +349,7 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    public static class VehicleViewHolder extends RecyclerView.ViewHolder {
+    /*public static class VehicleViewHolder extends RecyclerView.ViewHolder {
 
         View mView;
 
@@ -317,10 +381,74 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-    }
+    }*/
 
     public void searchButtonClicked(View view) {
-        vehicle_list.setAdapter(FBRA);
+        if (!startDate.getText().toString().equals("Select Date") && !endDate.getText().toString().equals("Select Date")) {
+            Button confirmButton = (Button) findViewById(R.id.confirm_button);
+            Button searchButton = (Button) findViewById(R.id.search_button);
+            boolean isnotCompleted = (!van.isChecked() && !bus.isChecked()) || (!ac.isChecked() && !nonac.isChecked());
+            boolean isBus = !van.isChecked() && bus.isChecked() && ac.isChecked() && nonac.isChecked();
+            boolean isBusac = !van.isChecked() && bus.isChecked() && ac.isChecked() && !nonac.isChecked();
+            boolean isBusnonac = !van.isChecked() && bus.isChecked() && !ac.isChecked() && nonac.isChecked();
+            boolean isVan = van.isChecked() && !bus.isChecked() && ac.isChecked();
+            boolean isVanBus = van.isChecked() && bus.isChecked() && ac.isChecked() && nonac.isChecked();
+            boolean isVanBusac = van.isChecked() && bus.isChecked() && ac.isChecked() && !nonac.isChecked();
+            boolean isVanBusnonac = van.isChecked() && bus.isChecked() && !ac.isChecked() && nonac.isChecked();
+            if (isnotCompleted) {
+                vehicle_list.removeAllViewsInLayout();
+                confirmButton.setVisibility(View.GONE);
+                Toast.makeText(this, "Select vehicle type and AC correctly", Toast.LENGTH_SHORT).show();
+            } else if (isBus) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBus);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isBusac) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBusac);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isBusnonac) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBusnonac);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isVan) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterVan);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isVanBus) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBusVan);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isVanBusac) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBusacVan);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else if (isVanBusnonac) {
+                progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.setAdapter(adapterBusnonacVan);
+                confirmButton.setVisibility(View.VISIBLE);
+                searchButton.setText("Update Search");
+                progressBar.setVisibility(View.INVISIBLE);
+            } else {
+                vehicle_list.removeAllViewsInLayout();
+                confirmButton.setVisibility(View.GONE);
+                Toast.makeText(this, "No Vehicles", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Select Dates", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -337,6 +465,7 @@ public class MainActivity extends AppCompatActivity{
         dialogBuilder.setPositiveButton("Request", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
+                mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
 
             }
         });

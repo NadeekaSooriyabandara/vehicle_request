@@ -49,7 +49,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
     private EditText loginPass;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabaseReference;
-    //private ProgressBar progressBar;
+    private ProgressBar progressBarSignin, progressBarSignup;
 
     private Spinner spfaculty, spdepartment;
     private ArrayList<String> listApplied = new ArrayList<String>(Arrays.asList("Boteny", "Chemistry",
@@ -58,7 +58,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
             "Statistics", "Zoology", "Sport Science"));
     private EditText nameField;
     private EditText passField;
-    private EditText emailField;
+    private EditText emailField, employeeField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +96,8 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
 
         loginEmail = (EditText) findViewById(R.id.login_email);
         loginPass = (EditText) findViewById(R.id.login_pass);
-        //progressBar = (ProgressBar) findViewById(R.id.login_progressBar);
-        //progressBar.setVisibility(View.INVISIBLE);
+        progressBarSignin = (ProgressBar) findViewById(R.id.pb_signin);
+        progressBarSignup = (ProgressBar) findViewById(R.id.pb_signup);
 
         spfaculty = (Spinner) findViewById(R.id.spinner_faculty);
         spdepartment = (Spinner) findViewById(R.id.spinner_department);
@@ -105,6 +105,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
         nameField = (EditText) findViewById(R.id.nameField);
         passField = (EditText) findViewById(R.id.passField);
         emailField = (EditText) findViewById(R.id.emailField);
+        employeeField = (EditText) findViewById(R.id.employeeField);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -120,18 +121,19 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
             String pass = loginPass.getText().toString().trim();
 
             if (!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass)) {
-                //progressBar.setVisibility(View.VISIBLE);
                 mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //progressBar.animate();
+                            progressBarSignin.setVisibility(View.VISIBLE);
                             checkUserExists();
                         } else {
-                            //progressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(SigninSignupActivity.this, "Wrong credentials", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+            } else {
+                Toast.makeText(this, "Fill all the fields", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -144,32 +146,41 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
         }else {
             //TODO implement signup process here
             final String name = nameField.getText().toString().trim();
-            String email = emailField.getText().toString().trim();
-            String pass = passField.getText().toString().trim();
+            final String email = emailField.getText().toString().trim();
+            String pass = passField.getText().toString();
+            final String employee_id = employeeField.getText().toString().trim();
+            final String faculty = spfaculty.getSelectedItem().toString().trim();
+            final String department = spdepartment.getSelectedItem().toString().trim();
 
-            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass)) {
-                //progressBar.setVisibility(View.VISIBLE);
+            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(employee_id)) {
+                progressBarSignup.setVisibility(View.VISIBLE);
                 mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
                             String user_id = mAuth.getCurrentUser().getUid();
-                            DatabaseReference current_user_db = mDatabaseReference.child("Users").child(user_id);
-                            current_user_db.child("Name").setValue(name);
-                            //current_user_db.child("image").setValue("default");
+                            DatabaseReference current_user_db = mDatabaseReference.child("Users").child(employee_id);
+                            current_user_db.child("name").setValue(name);
+                            current_user_db.child("userid").setValue(user_id);
+                            current_user_db.child("email").setValue(email);
+                            current_user_db.child("faculty").setValue(faculty);
+                            current_user_db.child("department").setValue(department);
+                            //current_user_db.child("requests").setValue("");
+
+                            DatabaseReference user_db = mDatabaseReference.child("UserIdentities");
+                            user_db.child(user_id).setValue(employee_id);
 
                             Intent mainIntent = new Intent(SigninSignupActivity.this, MainActivity.class);
                             mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            //progressBar.setVisibility(View.INVISIBLE);
                             startActivity(mainIntent);
                         } else {
-                            Toast.makeText(SigninSignupActivity.this, "Fill the text fields correctly", Toast.LENGTH_SHORT).show();
+                            progressBarSignup.setVisibility(View.INVISIBLE);
+                            Toast.makeText(SigninSignupActivity.this, "Complete all the fields correctly", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             } else {
-                Toast.makeText(this, "Fill all the text fields to register", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Complete all the fields to signup", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -231,7 +242,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
 
     private void checkUserExists() {
         final String user_id = mAuth.getCurrentUser().getUid();
-        mDatabaseReference.child("Users").addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child("UserIdentities").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(user_id)) {
@@ -251,7 +262,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void addListenerOnSpinnerItemSelection() {
-        spfaculty = (Spinner) findViewById(R.id.spinner_faculty);
+        //spfaculty = (Spinner) findViewById(R.id.spinner_faculty);
         spfaculty.setOnItemSelectedListener(this);
     }
 

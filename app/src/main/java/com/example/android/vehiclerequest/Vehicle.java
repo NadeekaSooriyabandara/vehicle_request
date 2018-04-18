@@ -6,17 +6,22 @@ import android.widget.TextView;
 
 public class Vehicle {
 
-    private String mVehicleNo, mSeats;
+    private String mVehicleNo, mSeats, mAC;
     private String mvehicleImage;
 
     public Vehicle() {
 
     }
 
-    public Vehicle(String VehicleNo, String Seats, String image) {
+    public Vehicle(String VehicleNo, String Seats, String image, String ac) {
         this.mVehicleNo = VehicleNo;
         this.mSeats = Seats;
         this.mvehicleImage = image;
+        this.mAC = ac;
+    }
+
+    public String getAC() {
+        return mAC;
     }
 
     public String getVehicleNo() {
@@ -41,6 +46,10 @@ public class Vehicle {
 
     public void setImage(String image) {
         this.mvehicleImage = image;
+    }
+
+    public void setAC(String ac) {
+        this.mAC = ac;
     }
 
 }

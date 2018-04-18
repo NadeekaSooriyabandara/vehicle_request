@@ -16,6 +16,12 @@
         android:layout_height="54dp">
     </android.support.v7.widget.Toolbar>
 
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/pb_main"
+        android:visibility="invisible"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

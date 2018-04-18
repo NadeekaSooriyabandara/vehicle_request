@@ -27,7 +27,7 @@
             android:id="@+id/login_email"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textColor="#FFFFFF" />
+            android:textColor="#000000" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -42,7 +42,7 @@
             android:id="@+id/login_pass"
             android:hint="Password"
             android:inputType="textPassword"
-            android:textColor="#FFFFFF" />
+            android:textColor="#000000" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
@@ -55,4 +55,12 @@
         android:textColor="#FFF"
         android:textSize="25sp"
         android:onClick="signinClicked"/>
+
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/pb_signin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:visibility="invisible"
+        style="?android:attr/progressBarStyle"/>
 </LinearLayout>

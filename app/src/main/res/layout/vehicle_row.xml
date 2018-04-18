@@ -33,7 +33,7 @@
                 android:id="@+id/vehicle_number"
                 android:layout_marginStart="30dp"
                 android:padding="5dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NC-1415"/>
@@ -45,6 +45,22 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/no_of_seats"
                 android:text="52 Seats"/>
+
+            <TextView
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/ac"
+                android:text="AC"/>
+
+            <TextView
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/booked"
+                android:text=""/>
 
         </LinearLayout>
 

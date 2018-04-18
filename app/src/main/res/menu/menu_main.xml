@@ -6,7 +6,7 @@
     <item
         android:id="@+id/notifications"
         android:orderInCategory="1"
-        android:title="notificatons"
+        android:title="notifications"
         app:showAsAction="always">
     </item>
     <item

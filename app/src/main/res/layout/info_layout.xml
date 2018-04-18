@@ -141,7 +141,7 @@
 
         <CheckBox
             android:padding="10dp"
-            android:id="@+id/checkBox_noac"
+            android:id="@+id/checkBox_nonac"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="No"
