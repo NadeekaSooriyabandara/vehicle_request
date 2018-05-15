@@ -3,15 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@drawable/bus2"
     tools:context="com.example.android.vehiclerequest.MainActivity">
 
     <android.support.v7.widget.Toolbar
-
+        app:logo="@drawable/bus_icon_48"
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccentTrans"
         android:layout_width="match_parent"
         android:layout_height="54dp">
     </android.support.v7.widget.Toolbar>
@@ -73,6 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Confirm"
+                    style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
                     android:visibility="gone"
                     android:id="@+id/confirm_button"
                     android:layout_gravity="center_horizontal"/>

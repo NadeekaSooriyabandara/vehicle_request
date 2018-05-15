@@ -149,14 +149,16 @@
 
     </LinearLayout>
 
+
     <Button
+        android:id="@+id/search_button"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/search_button"
         android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:textSize="18sp"
-        android:onClick="searchButtonClicked"/>
+        android:onClick="searchButtonClicked"
+        android:text="Search"
+        android:textSize="18sp" />
 
 </LinearLayout>

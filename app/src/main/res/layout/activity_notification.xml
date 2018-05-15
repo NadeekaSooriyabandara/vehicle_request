@@ -9,7 +9,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
         android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorAccentTrans"
         android:layout_width="match_parent"
         android:layout_height="54dp">
     </android.support.v7.widget.Toolbar>

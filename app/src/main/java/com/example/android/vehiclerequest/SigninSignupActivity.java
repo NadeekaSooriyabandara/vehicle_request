@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,6 +171,10 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
                             DatabaseReference user_db = mDatabaseReference.child("UserIdentities");
                             user_db.child(user_id).setValue(employee_id);
 
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+                            reference.child("token").setValue(FirebaseInstanceId.getInstance()
+                                    .getToken());
+
                             Intent mainIntent = new Intent(SigninSignupActivity.this, MainActivity.class);
                             mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(mainIntent);
@@ -246,6 +251,9 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(user_id)) {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
+                    reference.child("token").setValue(FirebaseInstanceId.getInstance()
+                            .getToken());
                     Intent loginIntent = new Intent(SigninSignupActivity.this, MainActivity.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(loginIntent);

@@ -1,5 +1,6 @@
 package com.example.android.vehiclerequest;
 
+//signin signup animation class
 
 import android.content.Context;
 import android.graphics.Canvas;

@@ -36,7 +36,9 @@ import com.google.firebase.database.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -401,42 +403,49 @@ public class MainActivity extends AppCompatActivity{
                 Toast.makeText(this, "Select vehicle type and AC correctly", Toast.LENGTH_SHORT).show();
             } else if (isBus) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBus);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isBusac) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBusac);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isBusnonac) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBusnonac);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isVan) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterVan);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isVanBus) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBusVan);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isVanBusac) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBusacVan);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
                 progressBar.setVisibility(View.INVISIBLE);
             } else if (isVanBusnonac) {
                 progressBar.setVisibility(View.VISIBLE);
+                vehicle_list.removeAllViewsInLayout();
                 vehicle_list.setAdapter(adapterBusnonacVan);
                 confirmButton.setVisibility(View.VISIBLE);
                 searchButton.setText("Update Search");
@@ -466,6 +475,7 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
                 mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
+                sendNotificationToUser("fdsf", "fdsfgdfg dsf");
 
             }
         });
@@ -483,4 +493,15 @@ public class MainActivity extends AppCompatActivity{
         });
         b.show();
     }
+
+    public static void sendNotificationToUser(String user, final String message) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("notificationRequests");
+
+        Map notification = new HashMap<>();
+        notification.put("username", user);
+        notification.put("message", message);
+
+        ref.push().setValue(notification);
+    }
+
 }
