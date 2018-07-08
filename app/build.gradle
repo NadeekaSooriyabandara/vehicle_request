@@ -35,6 +35,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.facebook.fresco:fresco:0.7.0'
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:1.0.1'
+    implementation 'com.infideap.drawerbehavior:drawer-behavior:0.0.5'
 }
 
 

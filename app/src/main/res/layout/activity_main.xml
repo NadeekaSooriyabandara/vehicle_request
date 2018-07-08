@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.infideap.drawerbehavior.AdvanceDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@drawable/bus2"
-    tools:context="com.example.android.vehiclerequest.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        app:logo="@drawable/bus_icon_48"
-        android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorAccentTrans"
-        android:layout_width="match_parent"
-        android:layout_height="54dp">
-    </android.support.v7.widget.Toolbar>
+    android:id="@+id/drawer_layout"
+
+    android:fitsSystemWindows="true"
+    android:background="#ffffff"
+    tools:openDrawer="start">
+
+
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:background="#ffffff"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/activity_main_drawer" />
+
 
     <android.support.v4.widget.ContentLoadingProgressBar
         android:layout_width="match_parent"
@@ -36,6 +44,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <android.support.v7.widget.Toolbar
+                app:logo="@drawable/bus_icon_48"
+                android:id="@+id/toolbar"
+                android:background="@color/colorAccentTrans"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize">
+            </android.support.v7.widget.Toolbar>
 
             <include
                 layout="@layout/info_layout"
@@ -95,4 +111,4 @@
 
 
 
-</LinearLayout>
+</com.infideap.drawerbehavior.AdvanceDrawerLayout>

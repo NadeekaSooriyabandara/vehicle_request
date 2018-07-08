@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.infideap.drawerbehavior.AdvanceDrawerLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -41,7 +45,9 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+    private AdvanceDrawerLayout drawer;
+
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -85,6 +91,15 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         mAuth.addAuthStateListener(mAuthListener);
+
+        drawer = (AdvanceDrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, topToolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         progressBar = (ProgressBar) findViewById(R.id.pb_main);
         myCalendar1 = Calendar.getInstance();
@@ -504,4 +519,12 @@ public class MainActivity extends AppCompatActivity{
         ref.push().setValue(notification);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        //TODO Handle navigation view item clicks here.
+
+        drawer.closeDrawer(GravityCompat.START);
+
+        return true;
+    }
 }
