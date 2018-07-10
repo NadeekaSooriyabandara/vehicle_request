@@ -33,9 +33,12 @@ import android.widget.Toast;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.infideap.drawerbehavior.AdvanceDrawerLayout;
 
 import java.text.SimpleDateFormat;
@@ -490,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
                 mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
-                sendNotificationToUser("fdsf", "fdsfgdfg dsf");
+                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString());
 
             }
         });
@@ -509,14 +512,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.show();
     }
 
-    public static void sendNotificationToUser(String user, final String message) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("notificationRequests");
+    public static void sendNotificationToUser(final String userId, final String message) {
+        final DatabaseReference userref = FirebaseDatabase.getInstance().getReference();
 
-        Map notification = new HashMap<>();
-        notification.put("username", user);
-        notification.put("message", message);
+        final String[] userIndex = new String[1];
+        final String[] userFaculty = new String[1];
+        final String[] userDepartment = new String[1];
 
-        ref.push().setValue(notification);
+        userref.child("UserIdentities").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userIndex[0] = (String) dataSnapshot.child(userId).getValue();
+
+                userref.child("Users").child(userIndex[0]).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        userFaculty[0] = (String) dataSnapshot.child("faculty").getValue();
+                        userDepartment[0] = (String) dataSnapshot.child("department").getValue();
+
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("faculty").child(userFaculty[0])
+                                .child(userDepartment[0]).child("notifications");
+
+
+                        Map notification = new HashMap<>();
+                        notification.put("fromuserid", userId);
+                        notification.put("message", message);
+
+
+                        ref.push().setValue(notification);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     @Override

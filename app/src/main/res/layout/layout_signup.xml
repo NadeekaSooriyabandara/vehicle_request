@@ -68,7 +68,7 @@
             android:id="@+id/employeeField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Employee ID"
+            android:hint="ID"
             android:inputType="text"
             android:textColor="#000000" />
     </android.support.design.widget.TextInputLayout>
