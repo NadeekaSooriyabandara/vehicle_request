@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +40,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.infideap.drawerbehavior.AdvanceDrawerLayout;
 
 import java.text.SimpleDateFormat;
@@ -274,7 +276,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dialogBuilder.setMessage("Are you sure want to logout?");
                 dialogBuilder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        mAuth.signOut();
+                        final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                        final String user_id = mAuth.getCurrentUser().getUid();
+                        db.child("UserIdentities").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.hasChild(user_id)) {
+                                    String indexNo = (String) dataSnapshot.child(user_id).getValue();
+                                    db.child("Users").child(indexNo).child("token").setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            mAuth.signOut();
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
                 });
                 dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -493,7 +516,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
                 mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
-                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString());
+                String date = "from " + startDate.getText().toString() + " to " + endDate.getText().toString();
+                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString(), date);
 
             }
         });
@@ -512,7 +536,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.show();
     }
 
-    public static void sendNotificationToUser(final String userId, final String message) {
+    public static void sendNotificationToUser(final String userId, final String message, final String date) {
         final DatabaseReference userref = FirebaseDatabase.getInstance().getReference();
 
         final String[] userIndex = new String[1];
@@ -537,6 +561,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Map notification = new HashMap<>();
                         notification.put("fromuserid", userId);
                         notification.put("message", message);
+                        notification.put("date", date);
 
 
                         ref.push().setValue(notification);

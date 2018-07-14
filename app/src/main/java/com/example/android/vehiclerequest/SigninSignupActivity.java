@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -166,7 +167,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
                             current_user_db.child("email").setValue(email);
                             current_user_db.child("faculty").setValue(faculty);
                             current_user_db.child("department").setValue(department);
-                            //current_user_db.child("requests").setValue("");
+                            current_user_db.child("token").setValue(FirebaseInstanceId.getInstance().getToken());
 
                             DatabaseReference user_db = mDatabaseReference.child("UserIdentities");
                             user_db.child(user_id).setValue(employee_id);
@@ -251,12 +252,18 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(user_id)) {
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications");
-                    reference.child("token").setValue(FirebaseInstanceId.getInstance()
-                            .getToken());
-                    Intent loginIntent = new Intent(SigninSignupActivity.this, MainActivity.class);
-                    loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(loginIntent);
+                    String indexNo = (String) dataSnapshot.child(user_id).getValue();
+                    mDatabaseReference.child("Users").child(indexNo).child("token").setValue(FirebaseInstanceId
+                            .getInstance().getToken()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Intent loginIntent = new Intent(SigninSignupActivity.this, MainActivity.class);
+                            loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(loginIntent);
+                        }
+                    });
+
+
                 } else {
                     Toast.makeText(SigninSignupActivity.this, "User not found", Toast.LENGTH_SHORT).show();
                 }
