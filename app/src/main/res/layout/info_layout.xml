@@ -26,9 +26,28 @@
             android:textColor="#000000"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Date"
+            android:text="Date"
             android:clickable="true"
             android:onClick="startDateClicked"
+            android:focusable="true" />
+
+        <TextView
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pickup Time: "/>
+
+        <TextView
+            android:textSize="16sp"
+            android:id="@+id/tv_start_time"
+            android:textColor="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:clickable="true"
+            android:onClick="startTimeClicked"
             android:focusable="true" />
 
     </LinearLayout>
@@ -52,9 +71,28 @@
             android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Date"
+            android:text="Date"
             android:clickable="true"
             android:onClick="endDateClicked"
+            android:focusable="true" />
+
+        <TextView
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dropoff Time: "
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_end_time"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:clickable="true"
+            android:onClick="endTimeClicked"
             android:focusable="true" />
 
     </LinearLayout>

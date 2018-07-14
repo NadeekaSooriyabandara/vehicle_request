@@ -2,6 +2,7 @@ package com.example.android.vehiclerequest;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +31,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -60,10 +64,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Calendar myCalendar2;
     DatePickerDialog.OnDateSetListener date1;
     DatePickerDialog.OnDateSetListener date2;
-    private TextView startDate;
-    private TextView endDate;
+    private TextView startDate, startTime;
+    private TextView endDate, endTime;
     private CheckBox van, bus, ac, nonac;
     private ProgressBar progressBar;
+    private String stime, etime;
 
     private RecyclerView vehicle_list;
     private DatabaseReference mDatabaseReference;
@@ -111,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myCalendar2 = Calendar.getInstance();
         startDate = (TextView) findViewById(R.id.tv_start_date);
         endDate = (TextView) findViewById(R.id.tv_end_date);
+        startTime = (TextView) findViewById(R.id.tv_start_time);
+        endTime = (TextView) findViewById(R.id.tv_end_time);
         van = (CheckBox) findViewById(R.id.checkBox_van);
         bus = (CheckBox) findViewById(R.id.checkBox_bus);
         ac = (CheckBox) findViewById(R.id.checkBox_ac);
@@ -370,6 +377,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 myCalendar2.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    public void startTimeClicked(View view) {
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        int startHour = c.get(Calendar.HOUR_OF_DAY);
+        int startMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        startTime.setText(hourOfDay + ":" + minute);
+                        stime = hourOfDay + ":" + minute;
+                    }
+                }, startHour, startMinute, false);
+        timePickerDialog.show();
+    }
+
+    public void endTimeClicked(View view) {
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        int endHour = c.get(Calendar.HOUR_OF_DAY);
+        int endMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay,
+                                  int minute) {
+
+                endTime.setText(hourOfDay + ":" + minute);
+                etime = hourOfDay + ":" + minute;
+            }
+        }, endHour, endMinute, false);
+        timePickerDialog.show();
+    }
+
     private void updateLabelStart() {
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
@@ -516,8 +563,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
                 mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
-                String date = "from " + startDate.getText().toString() + " to " + endDate.getText().toString();
-                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString(), date);
+                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString(), startDate, endDate, stime, etime);
 
             }
         });
@@ -536,8 +582,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.show();
     }
 
-    public static void sendNotificationToUser(final String userId, final String message, final String date) {
+    public static void sendNotificationToUser(final String userId, final String message, final TextView startDate, TextView endDate, final String stime, final String etime) {
         final DatabaseReference userref = FirebaseDatabase.getInstance().getReference();
+        final String date = "from " + startDate.getText().toString() + " " + stime+ " to "
+                + endDate.getText().toString() + " " + etime;
 
         final String[] userIndex = new String[1];
         final String[] userFaculty = new String[1];
@@ -562,6 +610,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         notification.put("fromuserid", userId);
                         notification.put("message", message);
                         notification.put("date", date);
+                        notification.put("stime", stime);
+                        notification.put("etime", etime);
+                        notification.put("respond", "false");
 
 
                         ref.push().setValue(notification);
@@ -586,6 +637,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         //TODO Handle navigation view item clicks here.
+
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Fragment fragment = null;
+        Class fragmentClass = null;
+        if (id == R.id.nav_pending) {
+            fragmentClass = pendingFragment.class;
+            findViewById(R.id.infol).setVisibility(View.GONE);
+            findViewById(R.id.vehiclesl).setVisibility(View.GONE);
+            findViewById(R.id.confirm_button).setVisibility(View.GONE);
+            findViewById(R.id.fragmentmain).setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_request) {
+            findViewById(R.id.fragmentmain).setVisibility(View.GONE);
+            findViewById(R.id.infol).setVisibility(View.VISIBLE);
+            findViewById(R.id.vehiclesl).setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_history) {
+            fragmentClass = HistoryFragment.class;
+            findViewById(R.id.infol).setVisibility(View.GONE);
+            findViewById(R.id.vehiclesl).setVisibility(View.GONE);
+            findViewById(R.id.confirm_button).setVisibility(View.GONE);
+            findViewById(R.id.fragmentmain).setVisibility(View.VISIBLE);
+        } else if (id == R.id.nav_logout) {
+            final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_DARK);
+
+            //dialogBuilder.setTitle("Request a Vehicle");
+            dialogBuilder.setMessage("Are you sure want to logout?");
+            dialogBuilder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    final String user_id = mAuth.getCurrentUser().getUid();
+                    db.child("UserIdentities").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.hasChild(user_id)) {
+                                String indexNo = (String) dataSnapshot.child(user_id).getValue();
+                                db.child("Users").child(indexNo).child("token").setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        mAuth.signOut();
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            });
+            dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    //pass
+                }
+            });
+            final AlertDialog b = dialogBuilder.create();
+            b.setOnShowListener( new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    b.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.rgb(0, 255, 0));
+                }
+            });
+            b.show();
+        }
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (id != R.id.nav_request && id != R.id.nav_logout) {
+            fragmentManager.beginTransaction().replace(R.id.fragmentmain, fragment).commit();
+        }
 
         drawer.closeDrawer(GravityCompat.START);
 
