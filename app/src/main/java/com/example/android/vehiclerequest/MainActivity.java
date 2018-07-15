@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CheckBox van, bus, ac, nonac;
     private ProgressBar progressBar;
     private String stime, etime;
+    private EditText noPassengers;
 
     private RecyclerView vehicle_list;
     private DatabaseReference mDatabaseReference;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bus = (CheckBox) findViewById(R.id.checkBox_bus);
         ac = (CheckBox) findViewById(R.id.checkBox_ac);
         nonac = (CheckBox) findViewById(R.id.checkBox_nonac);
+        noPassengers = (EditText) findViewById(R.id.no_passengers);
 
 
         date1 = new DatePickerDialog.OnDateSetListener() {
@@ -563,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int whichButton) {
                 //TODO something with edt.getText().toString(); update database
                 mDatabaseUsers = mDatabaseUsers.child(mAuth.getCurrentUser().getUid()).child("requests");
-                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString(), startDate, endDate, stime, etime);
+                sendNotificationToUser(mAuth.getCurrentUser().getUid(), edt.getText().toString(), startDate, endDate, stime, etime, noPassengers.getText().toString().trim());
 
             }
         });
@@ -582,10 +584,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.show();
     }
 
-    public static void sendNotificationToUser(final String userId, final String message, final TextView startDate, TextView endDate, final String stime, final String etime) {
+    public static void sendNotificationToUser(final String userId, final String message, final TextView startDate, TextView endDate, final String stime, final String etime, final String passengers) {
         final DatabaseReference userref = FirebaseDatabase.getInstance().getReference();
-        final String date = "from " + startDate.getText().toString() + " " + stime+ " to "
-                + endDate.getText().toString() + " " + etime;
+        final String date;
+        if (stime == null || etime == null) {
+            date = "from " + startDate.getText().toString() + " to " + endDate.getText().toString();
+        }else{
+            date = "from " + startDate.getText().toString() + " " + stime+ " to "
+                    + endDate.getText().toString() + " " + etime;
+        }
 
         final String[] userIndex = new String[1];
         final String[] userFaculty = new String[1];
@@ -613,6 +620,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         notification.put("stime", stime);
                         notification.put("etime", etime);
                         notification.put("respond", "false");
+                        notification.put("passengers", passengers);
 
 
                         ref.push().setValue(notification);
