@@ -201,6 +201,7 @@
             android:textSize="16sp"/>
 
         <EditText
+            android:inputType="numberDecimal"
             android:id="@+id/no_passengers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
