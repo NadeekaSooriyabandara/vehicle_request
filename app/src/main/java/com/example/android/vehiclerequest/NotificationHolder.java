@@ -19,22 +19,25 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
         mView = itemView;
     }
 
-    public void setVehicleNo(String vehicleNo) {
-        TextView  vehicle_no= mView.findViewById(R.id.vehicle_no);
-        vehicle_no.setText("Vehicle No: " + vehicleNo);
+    public void setVehicleNo(String vehicleNo, String vehicleType) {
+        TextView  vehicle_no= mView.findViewById(R.id.noti_vehicle_no);
+        vehicle_no.setText("Vehicle No: " + vehicleNo + "(" + vehicleType +")");
     }
 
-    public void setVehicleType(String vehicle, String seats, String ac) {
+    /*public void setVehicleType(String vehicle, String seats, String ac) {
         TextView  vehicle_type= mView.findViewById(R.id.vehicle_type);
         vehicle_type.setText(ac + " " + vehicle + " with " + seats + " seats");
+    }*/
+
+    public void setDates(String sdate, String edate, String stime, String etime) {
+        TextView  start_dates= mView.findViewById(R.id.booked_start_dates);
+        TextView  end_dates= mView.findViewById(R.id.booked_end_dates);
+        start_dates.setText("From " + sdate + " " + stime);
+        end_dates.setText("To " + edate + " " + etime);
+
     }
 
-    public void setDates(String startdate, String enddate) {
-        TextView  dates= mView.findViewById(R.id.booked_dates);
-        dates.setText("From " + startdate + " To " + enddate);
-    }
-
-    public void setImage(Context context,String image) {
+    /*public void setImage(Context context,String image) {
         final SimpleDraweeView mSimpleDraweeView = (SimpleDraweeView) mView.findViewById(R.id.image_bus);
         if (image != null) {
             mSimpleDraweeView.setController(
@@ -43,13 +46,13 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
                             .setUri(Uri.parse(image))
                             .build());
         }
-    }
+    }*/
 
     public void setTitle(String request) {
         TextView title = mView.findViewById(R.id.notification_title);
         if (request.equals("confirmed")) {
             title.setText("Request Accepted!");
-        } else if (request.equals("not confirmed")) {
+        } else if (request.equals("rejected")) {
             title.setText("Request Rejected!");
         }
     }
@@ -58,6 +61,11 @@ public class NotificationHolder extends RecyclerView.ViewHolder {
         TextView date = mView.findViewById(R.id.notification_date);
 
 
+    }
+
+    public void setReason(String reason) {
+        TextView reso = mView.findViewById(R.id.noti_reason);
+        reso.setText(reason);
     }
 
 

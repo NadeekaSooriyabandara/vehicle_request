@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +30,13 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         mView = itemView;
     }
 
+    public boolean isSelected() {
+        RadioButton radioButton = (RadioButton) mView.findViewById(R.id.check_vehicle);
+        return radioButton.isChecked();
+    }
+
     public void setBooked(TextView startdate, TextView enddate, String vehicleNo, DatabaseReference databaseReference){
-        final CheckBox checkBox = (CheckBox) mView.findViewById(R.id.check_vehicle);
+        final RadioButton checkBox = (RadioButton) mView.findViewById(R.id.check_vehicle);
         final TextView tv_booked = (TextView) mView.findViewById(R.id.booked);
         final String sdate = startdate.getText().toString();
         String edate = enddate.getText().toString();

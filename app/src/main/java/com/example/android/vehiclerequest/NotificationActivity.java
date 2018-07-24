@@ -12,10 +12,14 @@ import android.widget.LinearLayout;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class NotificationActivity extends AppCompatActivity {
 
@@ -64,30 +68,46 @@ public class NotificationActivity extends AppCompatActivity {
         notification_list.setHasFixedSize(true);
         notification_list.setLayoutManager(new LinearLayoutManager(this, LinearLayout.VERTICAL, false));
 
-        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mDatabase.getReference().child("Users");
-
-        /*Query query = mDatabaseReference.orderByKey();
-        FirebaseRecyclerOptions<NotificationModel> firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<NotificationModel>()
-                .setQuery(query, NotificationModel.class)
-                .build();
-        notificationAdapter = new NotificationAdapter(firebaseRecyclerOptions, this);*/
-
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        /*notificationAdapter.startListening();
-        notification_list.setAdapter(notificationAdapter);*/
+
+        final FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+        final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+        final String user_id = mAuth.getCurrentUser().getUid();
+        db.child("UserIdentities").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(user_id)) {
+                    String indexNo = (String) dataSnapshot.child(user_id).getValue();
+
+                    mDatabaseReference = mDatabase.getReference().child("Users").child(indexNo).child("notifications");
+
+                    Query query = mDatabaseReference.orderByKey();
+                    FirebaseRecyclerOptions<NotificationModel> firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<NotificationModel>()
+                            .setQuery(query, NotificationModel.class)
+                            .build();
+                    notificationAdapter = new NotificationAdapter(firebaseRecyclerOptions, NotificationActivity.this, mDatabaseReference, mAuth);
+                    notificationAdapter.startListening();
+                    notification_list.setAdapter(notificationAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        //notificationAdapter.stopListening();
+        notificationAdapter.stopListening();
     }
 
 }

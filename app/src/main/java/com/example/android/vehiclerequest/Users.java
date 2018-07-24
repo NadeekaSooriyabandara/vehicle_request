@@ -1,13 +1,22 @@
 package com.example.android.vehiclerequest;
 
-public class NotificationModel {
+public class Users extends UserId{
 
     String fromuserid, message, vehicles, date, passengers, stime, etime;
 
-    public NotificationModel() {
+    public Users() {
     }
 
-    public NotificationModel(String fromuserid, String message, String date, String passengers, String stime, String etime) {
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getDate() {
+
+        return date;
+    }
+
+    public Users(String fromuserid, String message, String date, String passengers, String stime, String etime) {
         this.fromuserid = fromuserid;
         this.message = message;
         this.date  =date;
@@ -54,14 +63,5 @@ public class NotificationModel {
 
     public void setImage(String message) {
         this.message = message;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getDate() {
-
-        return date;
     }
 }

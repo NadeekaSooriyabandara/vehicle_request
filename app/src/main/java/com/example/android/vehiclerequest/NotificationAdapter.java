@@ -28,21 +28,30 @@ public class NotificationAdapter extends FirebaseRecyclerAdapter<NotificationMod
     @Override
     protected void onBindViewHolder(@NonNull NotificationHolder holder, int position, @NonNull NotificationModel model) {
 
-        holder.setTitle(model.getRequest());
+        /*holder.setTitle(model.getRequest());
         holder.setDates(model.getStartDate(), model.getEndDate());
         holder.setImage(context, model.getImage());
         holder.setVehicleNo(model.getVehicleNo());
         holder.setVehicleType(model.getVehicleType(), model.getSeats(), model.getAC());
-        holder.setNotificationDate();
+        holder.setNotificationDate();*/
+
+
 
         final String key = getRef(position).getKey();
-        holder.mView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
+        /*holder.mView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO delete process here
                 mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users")
                         .child(mAuth.getCurrentUser().getUid()).child("requests");
                 mDatabaseReference.child(key).removeValue();
+            }
+        });*/
+        holder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO remove from notification activity and display in history activity
+
             }
         });
     }

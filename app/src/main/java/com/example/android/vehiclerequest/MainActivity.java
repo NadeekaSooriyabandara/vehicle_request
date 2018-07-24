@@ -49,6 +49,7 @@ import com.infideap.drawerbehavior.AdvanceDrawerLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressBar progressBar;
     private String stime, etime;
     private EditText noPassengers;
+    private String currentTimeString;
 
     private RecyclerView vehicle_list;
     private DatabaseReference mDatabaseReference;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     CustomAdapter adapterBusac, adapterBusnonac, adapterBus, adapterVan, adapterBusacVan, adapterBusnonacVan, adapterBusVan;
 
     public static int count = 0;
+    private String selectedVehicle, selectedVno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,14 +189,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseRecyclerOptions<Vehicle> optionBusVan = new FirebaseRecyclerOptions.Builder<Vehicle>()
                 .setQuery(queryBusVan, Vehicle.class)
                 .build();
+        if (mAuth.getCurrentUser() != null) {
+            String user_id = mAuth.getCurrentUser().getUid();
 
-        adapterBusac = new CustomAdapter(optionBusac, this, startDate, endDate, mDatabaseReference);
-        adapterBusnonac = new CustomAdapter(optionBusnonac, this, startDate, endDate, mDatabaseReference);
-        adapterBus = new CustomAdapter(optionBus, this, startDate, endDate, mDatabaseReference);
-        adapterVan = new CustomAdapter(optionVan, this, startDate, endDate, mDatabaseReference);
-        adapterBusacVan = new CustomAdapter(optionBusacVan, this, startDate, endDate, mDatabaseReference);
-        adapterBusnonacVan = new CustomAdapter(optionBusnonacVan, this, startDate, endDate, mDatabaseReference);
-        adapterBusVan = new CustomAdapter(optionBusVan, this, startDate, endDate, mDatabaseReference);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            adapterBusac = new CustomAdapter(optionBusac, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterBusnonac = new CustomAdapter(optionBusnonac, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterBus = new CustomAdapter(optionBus, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterVan = new CustomAdapter(optionVan, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterBusacVan = new CustomAdapter(optionBusacVan, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterBusnonacVan = new CustomAdapter(optionBusnonacVan, this, startDate, endDate, mDatabaseReference, user_id, db);
+            adapterBusVan = new CustomAdapter(optionBusVan, this, startDate, endDate, mDatabaseReference, user_id, db);
+        } else {
+            Intent loginIntent = new Intent(MainActivity.this, SigninSignupActivity.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(loginIntent);
+        }
+
 
         /*FBRA = new FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder>(options) {
             @NonNull
@@ -233,8 +245,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };*/
 
         //vehicle_list.setAdapter(FBRA);
-
-
+        updateLabelStart();
+        updateLabelEnd();
+        currentTimeString = new SimpleDateFormat("HH:mm").format(new Date());
+        startTime.setText(currentTimeString);
+        endTime.setText(currentTimeString);
+        stime = startTime.getText().toString();
+        etime = endTime.getText().toString();
     }
 
 
@@ -341,26 +358,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        adapterBusac.startListening();
-        adapterBusnonac.startListening();
-        adapterBus.startListening();
-        adapterVan.startListening();
-        adapterBusacVan.startListening();
-        adapterBusnonacVan.startListening();
-        adapterBusVan.startListening();
+        if (mAuth.getCurrentUser() != null) {
+            adapterBusac.startListening();
+            adapterBusnonac.startListening();
+            adapterBus.startListening();
+            adapterVan.startListening();
+            adapterBusacVan.startListening();
+            adapterBusnonacVan.startListening();
+            adapterBusVan.startListening();
+        }
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        adapterBusac.stopListening();
-        adapterBusnonac.stopListening();
-        adapterBus.stopListening();
-        adapterVan.stopListening();
-        adapterBusacVan.stopListening();
-        adapterBusnonacVan.stopListening();
-        adapterBusVan.stopListening();
+        if (mAuth.getCurrentUser() != null) {
+            adapterBusac.stopListening();
+            adapterBusnonac.stopListening();
+            adapterBus.stopListening();
+            adapterVan.stopListening();
+            adapterBusacVan.stopListening();
+            adapterBusnonacVan.stopListening();
+            adapterBusVan.stopListening();
+        }
         if (mAuth != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
@@ -423,7 +444,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        Toast.makeText(this, sdf.format(myCalendar1.getTime()), Toast.LENGTH_SHORT).show();
         startDate.setText(sdf.format(myCalendar1.getTime()));
 
     }
@@ -432,12 +452,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String myFormat = "dd/MM/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        Toast.makeText(this, sdf.format(myCalendar2.getTime()), Toast.LENGTH_SHORT).show();
         endDate.setText(sdf.format(myCalendar2.getTime()));
     }
 
     public void confirmButtonClicked(View view) {
-        showRequestDialog();
+        boolean isBus = !van.isChecked() && bus.isChecked() && ac.isChecked() && nonac.isChecked();
+        boolean isBusac = !van.isChecked() && bus.isChecked() && ac.isChecked() && !nonac.isChecked();
+        boolean isBusnonac = !van.isChecked() && bus.isChecked() && !ac.isChecked() && nonac.isChecked();
+        boolean isVan = van.isChecked() && !bus.isChecked() && ac.isChecked();
+        boolean isVanBus = van.isChecked() && bus.isChecked() && ac.isChecked() && nonac.isChecked();
+        boolean isVanBusac = van.isChecked() && bus.isChecked() && ac.isChecked() && !nonac.isChecked();
+        boolean isVanBusnonac = van.isChecked() && bus.isChecked() && !ac.isChecked() && nonac.isChecked();
+
+        if (isBus) {
+            if (adapterBus.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBus.getSelectedVehicle();
+                selectedVno = adapterBus.getSelectedVehicleNo();
+            }
+        } else if (isBusac) {
+            if (adapterBusac.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBusac.getSelectedVehicle();
+                selectedVno = adapterBusac.getSelectedVehicleNo();
+            }
+        } else if (isBusnonac) {
+            if (adapterBusnonac.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBusnonac.getSelectedVehicle();
+                selectedVno = adapterBusnonac.getSelectedVehicleNo();
+            }
+        } else if (isVan) {
+            if (adapterVan.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterVan.getSelectedVehicle();
+                selectedVno = adapterVan.getSelectedVehicleNo();
+            }
+        } else if (isVanBus) {
+            if (adapterBusVan.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBusVan.getSelectedVehicle();
+                selectedVno = adapterBusVan.getSelectedVehicleNo();
+            }
+        } else if (isVanBusac) {
+            if (adapterBusacVan.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBusacVan.getSelectedVehicle();
+                selectedVno = adapterBusacVan.getSelectedVehicleNo();
+            }
+        } else if (isVanBusnonac) {
+            if (adapterBusnonacVan.getSelectedRadioButtonPosition() != -1) {
+                selectedVehicle = adapterBusnonacVan.getSelectedVehicle();
+                selectedVno = adapterBusnonacVan.getSelectedVehicleNo();
+            }
+        }
+        if (!selectedVehicle.equals("nothing")) {
+            showRequestDialog();
+        } else {
+            Toast.makeText(this, "Select a vehicle to confirm", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -476,6 +543,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }*/
 
     public void searchButtonClicked(View view) {
+        selectedVehicle = "nothing";
         if (!startDate.getText().toString().equals("Select Date") && !endDate.getText().toString().equals("Select Date")) {
             Button confirmButton = (Button) findViewById(R.id.confirm_button);
             Button searchButton = (Button) findViewById(R.id.search_button);
@@ -490,7 +558,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (isnotCompleted) {
                 vehicle_list.removeAllViewsInLayout();
                 confirmButton.setVisibility(View.GONE);
-                Toast.makeText(this, "Select vehicle type and AC correctly", Toast.LENGTH_SHORT).show();
             } else if (isBus) {
                 progressBar.setVisibility(View.VISIBLE);
                 vehicle_list.removeAllViewsInLayout();
@@ -584,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.show();
     }
 
-    public static void sendNotificationToUser(final String userId, final String message, final TextView startDate, TextView endDate, final String stime, final String etime, final String passengers) {
+    public void sendNotificationToUser(final String userId, final String message, final TextView startDate, final TextView endDate, final String stime, final String etime, final String passengers) {
         final DatabaseReference userref = FirebaseDatabase.getInstance().getReference();
         final String date;
         if (stime == null || etime == null) {
@@ -597,6 +664,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String[] userIndex = new String[1];
         final String[] userFaculty = new String[1];
         final String[] userDepartment = new String[1];
+        final String[] userName = new String[1];
 
         userref.child("UserIdentities").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -608,22 +676,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         userFaculty[0] = (String) dataSnapshot.child("faculty").getValue();
                         userDepartment[0] = (String) dataSnapshot.child("department").getValue();
-
+                        userName[0] = (String) dataSnapshot.child("name").getValue();
+                        //TODO get checked vehicles
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("faculty").child(userFaculty[0])
-                                .child(userDepartment[0]).child("notifications");
+                                .child(userDepartment[0]).child("notifications").child(userId+System.currentTimeMillis());
 
 
                         Map notification = new HashMap<>();
                         notification.put("fromuserid", userId);
                         notification.put("message", message);
+                        notification.put("name", userName[0]);
+                        notification.put("faculty", userFaculty[0]);
+                        notification.put("department", userDepartment[0]);
                         notification.put("date", date);
+                        notification.put("indexNo", userIndex[0]);
                         notification.put("stime", stime);
                         notification.put("etime", etime);
                         notification.put("respond", "false");
                         notification.put("passengers", passengers);
+                        notification.put("vehicle", selectedVehicle);
+                        notification.put("vehicleNo", selectedVno);
+                        notification.put("sdate", startDate.getText().toString().trim());
+                        notification.put("edate", endDate.getText().toString().trim());
 
 
-                        ref.push().setValue(notification);
+                        ref.updateChildren(notification).addOnSuccessListener(new OnSuccessListener() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                userref.child("Users").child(userIndex[0]).child("checkedVehicles").removeValue();
+                            }
+                        });
                     }
 
                     @Override

@@ -130,7 +130,7 @@ public class SigninSignupActivity extends AppCompatActivity implements View.OnCl
                             progressBarSignin.setVisibility(View.VISIBLE);
                             checkUserExists();
                         } else {
-                            Toast.makeText(SigninSignupActivity.this, "Wrong credentials", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SigninSignupActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
