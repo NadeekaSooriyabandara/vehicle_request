@@ -678,11 +678,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         userDepartment[0] = (String) dataSnapshot.child("department").getValue();
                         userName[0] = (String) dataSnapshot.child("name").getValue();
                         //TODO get checked vehicles
+                        final String key = userId + System.currentTimeMillis();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("faculty").child(userFaculty[0])
-                                .child(userDepartment[0]).child("notifications").child(userId+System.currentTimeMillis());
+                                .child(userDepartment[0]).child("notifications").child(key);
 
 
-                        Map notification = new HashMap<>();
+                        final Map notification = new HashMap<>();
                         notification.put("fromuserid", userId);
                         notification.put("message", message);
                         notification.put("name", userName[0]);
@@ -703,7 +704,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         ref.updateChildren(notification).addOnSuccessListener(new OnSuccessListener() {
                             @Override
                             public void onSuccess(Object o) {
-                                userref.child("Users").child(userIndex[0]).child("checkedVehicles").removeValue();
+                                userref.child("Users").child(userIndex[0]).child("pendingnotifications").child(key).updateChildren(notification);
                             }
                         });
                     }

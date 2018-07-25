@@ -28,12 +28,11 @@ public class NotificationAdapter extends FirebaseRecyclerAdapter<NotificationMod
     @Override
     protected void onBindViewHolder(@NonNull NotificationHolder holder, int position, @NonNull NotificationModel model) {
 
-        /*holder.setTitle(model.getRequest());
-        holder.setDates(model.getStartDate(), model.getEndDate());
-        holder.setImage(context, model.getImage());
-        holder.setVehicleNo(model.getVehicleNo());
-        holder.setVehicleType(model.getVehicleType(), model.getSeats(), model.getAC());
-        holder.setNotificationDate();*/
+        holder.setDates(model.getSdate(), model.getEdate(), model.getStime(), model.getEtime());
+        holder.setVehicle(model.getVehicle());
+        holder.setTitle(model.getStatus());
+        holder.setReason(model.getMessage());
+        holder.setPassengers(model.getPassengers());
 
 
 

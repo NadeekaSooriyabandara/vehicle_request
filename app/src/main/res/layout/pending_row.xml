@@ -36,18 +36,18 @@
                 android:layout_height="100dp" />-->
 
             <TextView
-                android:id="@+id/noti_reason"
+                android:id="@+id/booked_reason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reason: field trip" />
             <TextView
-                android:id="@+id/noti_vehicle_no"
-                android:layout_below="@+id/noti_reason"
+                android:id="@+id/booked_vehicle_no"
+                android:layout_below="@+id/booked_reason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Vehicle: AB4356(Van)" />
             <TextView
-                android:layout_below="@+id/noti_vehicle_no"
+                android:layout_below="@+id/booked_vehicle_no"
                 android:id="@+id/booked_start_dates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,6 +58,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="To 07/05/2018 15.30" />
+            <TextView
+                android:layout_below="@+id/booked_end_dates"
+                android:id="@+id/booked_passengers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No of Passengers: 54" />
             <!--<TextView
                 android:id="@+id/reject_reason"
                 android:layout_width="wrap_content"
@@ -68,7 +74,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/booked_end_dates"
+                android:layout_below="@+id/booked_passengers"
                 android:textAllCaps="false"
                 android:text="Cancel Request"
                 android:layout_alignParentEnd="true"/>

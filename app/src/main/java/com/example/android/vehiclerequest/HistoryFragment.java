@@ -46,7 +46,7 @@ public class HistoryFragment extends Fragment {
 
         mNotifList = new ArrayList<>();
 
-        mNotificationList = (RecyclerView) view.findViewById(R.id.notification_list);
+        //mNotificationList = (RecyclerView) view.findViewById(R.id.notification_list);
         //notificationsAdapter = new NotificationsAdapter(getContext(), mNotifList);
 
         mNotificationList.setHasFixedSize(true);
