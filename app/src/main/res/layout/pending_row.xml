@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
-                android:text="02/05/2018" />
+                android:text="" />
 
         </RelativeLayout>
 

@@ -206,45 +206,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(loginIntent);
         }
 
-
-        /*FBRA = new FirebaseRecyclerAdapter<Vehicle, VehicleViewHolder>(options) {
-            @NonNull
-            @Override
-            public VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.vehicle_row, parent, false);
-
-                return new VehicleViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull VehicleViewHolder holder, int position, @NonNull Vehicle model) {
-                holder.mView.setVisibility(View.VISIBLE);
-                //final String post_key = getRef(position).getKey().toString();
-                holder.setVehicleNo(model.getVehicleNo());
-                holder.setSeats(model.getSeats() + " Seats");
-                holder.setImage(getApplicationContext(), model.getImage());
-
-                if (position == 0) {
-                    Button confirmButton = (Button) findViewById(R.id.confirm_button);
-                    Button searchButton = (Button) findViewById(R.id.search_button);
-                    confirmButton.setVisibility(View.VISIBLE);
-                    searchButton.setText("Update Search");
-                }
-
-                *//*holder.mView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent singleSocialActivity = new Intent(MainActivity.this, SingleSocialActivity.class);
-                        singleSocialActivity.putExtra("PostId", post_key);
-                        startActivity(singleSocialActivity);
-
-                    }
-                });*//*
-            }
-        };*/
-
-        //vehicle_list.setAdapter(FBRA);
         updateLabelStart();
         updateLabelEnd();
         currentTimeString = new SimpleDateFormat("HH:mm").format(new Date());

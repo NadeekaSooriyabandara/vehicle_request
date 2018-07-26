@@ -1,6 +1,6 @@
 package com.example.android.vehiclerequest;
 
-public class NotificationModel {
+public class NotificationModel extends UserId{
 
     String fromuserid, message, name, faculty, department, indexNo, vehicle,
             date, passengers, stime, etime, sdate, edate, vehicleNo, status;

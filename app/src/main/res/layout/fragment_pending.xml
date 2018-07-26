@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".pendingFragment"
-    android:background="#3e9d94">
+    tools:context=".pendingFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.RecyclerView
@@ -14,9 +13,6 @@
         android:layout_height="match_parent">
 
     </android.support.v7.widget.RecyclerView>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="dfrgerg"/>
+
 
 </FrameLayout>
